@@ -2,13 +2,75 @@
 - hosts: all
   become: true
   tasks:
-    - name: update apt
+    - name: Add ethereum ppa
+      apt_repository:
+        repo: ppa:ethereum/ethereum
+
+    - name: Add ethereum-dev ppa
+      apt_repository:
+        repo: ppa:ethereum/ethereum-dev
+
+    - name: Add ethereum libs ppa
+      apt_repository:
+        repo: ppa:ethereum/cpp-build-deps
+
+    - name: Apt update
       apt: update_cache=yes
 
-    - name: install depends
+    - name: Download setup_10.x
+      get_url: url=https://deb.nodesource.com/setup_10.x dest=/tmp/setup_10.x
+
+    - name: Add execute permissions to setup_10.x
+      file:
+        path: /tmp/setup_10.x
+        mode: '0744'
+
+    - name: Execute setup_10.x
+      shell: /tmp/setup_10.x
+
+    - name: Install depends
       apt:
         name: "{{ packages }}"
       vars:
         packages:
         - net-tools
-      
+        - build-essential
+        - solc
+        - ethereum
+        - nginx
+        - curl
+        - vim
+        - nodejs
+
+    - name: Install ganache-cli
+      community.general.npm:
+        name: ganache-cli
+        global: yes
+
+    - name: Install truffle
+      community.general.npm:
+        name: truffle
+        global: yes
+
+    - name: Delete project directory
+      file:
+        path: /home/vagrant/ethereum
+        state: absent
+
+    - name: Create project directory
+      file:
+        path: /home/vagrant/ethereum
+        state: directory
+
+    - name: Create truffle project
+      command: truffle init /home/vagrant/ethereum --force
+
+    - name: Install setuptools package
+      pip:
+        name: pkg_resources
+        executable: pip3
+
+    - name: Install web3 package
+      pip:
+        name: web3
+        executable: pip3
