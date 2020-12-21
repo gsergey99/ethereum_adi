@@ -41,6 +41,9 @@
         - curl
         - vim
         - nodejs
+        - python3-pip
+        - ruby-full
+        - docker.io
 
     - name: Install ganache-cli
       community.general.npm:
@@ -65,12 +68,27 @@
     - name: Create truffle project
       command: truffle init /home/vagrant/ethereum --force
 
-    - name: Install setuptools package
-      pip:
-        name: pkg_resources
-        executable: pip3
+    - name: Install web3
+      command: pip3 install web3
 
-    - name: Install web3 package
-      pip:
-        name: web3
-        executable: pip3
+    - name: Get kubectl
+      get_url: url=https://storage.googleapis.com/kubernetes-release/release/v1.20.1/bin/linux/amd64/kubectl dest=/tmp/kubectl
+
+    - name: Add execute permissions to kubectl
+      file:
+        path: /tmp/kubectl
+        mode: '0755'
+
+    - name: Move kubectl to path
+      command: mv /tmp/kubectl /usr/local/bin/kubectl
+
+    - name: Get minikube
+      get_url: url=https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 dest=/tmp/minikube
+
+    - name: Add execute permissions to minikube
+      file:
+        path: /tmp/minikube
+        mode: '0755'
+
+    - name: Move minikube to path
+      command: mv /tmp/minikube /usr/local/bin/minikube
