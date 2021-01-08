@@ -40,3 +40,10 @@ Iniciar ganache-cli:
 ```
 ganache-cli
 ```
+
+### Versiones para la red
+
+- kubectl: 1.14.2
+- kuberneter: 1.14.2
+- minikube: 1.14.2
+- Truffle: 5.0.5
