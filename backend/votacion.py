@@ -1,84 +1,89 @@
-import fire
 import sys
 import json
 
 from web3 import Web3, HTTPProvider
 
-
-
 class Votacion:
     
-    def  __init__ (self, Contract, w3, owner):
+    def  __init__ (self, contract, w3, owner):
         
         self.w3 = w3
         self.owner = owner
-        self.Contract = Contract
+        self.contract = contract
 
    
     def crear_votacion(self):
+        '''
+        Creación de una votación
+        '''
+        print('GAS estimation:', self.contract.functions.crearVotacion().estimateGas())
+        transaccion = self.contract.functions.crearVotacion().transact({'from': self.owner})  
         
-        print('GAS Estimation %s ' % self.Contract.functions.crearVotacion().estimateGas())
-        n_votaciones = self.Contract.functions.crearVotacion().call()
-        print(n_votaciones)
-        """
-        if votacion_ya_existe:
-            return 'Esa votación ya existe'
-        return 'Votasion creada correctamente'
-        """
-"""
-  def cerrar_lista(self, id_votacion):
-	if votacion_no_existe:
-		return 'Esa votación no existe'
-	if lista_ya_cerrada:
-		return 'La lista ya está cerrada'
-  	if lista_candidatos_vacia:
-		return 'Una votación debe tener candidatos'
-    return 'Lista cerrada correctamente'
+        receipt = self.w3.eth.getTransactionReceipt(transaccion)
+        print(receipt)
 
-  def cerrar_votacion(self, id_votacion):
-	if votacion_no_existe:
-		return 'Esa votación no existe'
-	if votacion_ya_cerrada:
-		return 'La votación ya está cerrada'
-    return 'Votacion cerrada correctamente'
+        block_id = receipt['blockNumber'] - 1
+        votacion_id = self.contract.functions.crearVotacion().call(block_identifier=block_id)
+        
+        return votacion_id
 
-  def aniadir_candidato(self, id_votacion, candidato):
-	if votacion_no_existe:
-		return 'Esa votación no existe'
-	if candidato_ya_añadido:
-		return 'Ese candidato ya existe'
-    return 'Añadido correctamente'
 
-  def votar(self, id_votacion, voto):
-	if votacion_no_existe:
-		return 'Esa votación no existe'
-	if ya_has_votado:
-		return 'Esa votación no existe'
-    return 'Pos ya has votao'
+    def add_candidato(self, votacion_id, candidato):
+        '''
+        Añadir un único candidato
+        '''
+        print('GAS estimation:', self.contract.functions.addCandidato(votacion_id, candidato).estimateGas())
+        transaccion = self.contract.functions.addCandidato(votacion_id, candidato).transact({'from': self.owner})
 
-  def listar_candidatos(self, id_votacion):
-	if votacion_no_existe:
-		return 'Esa votación no existe'
-	if lista_abierta:
-		return 'La lista de candidatos sigue abierta'
-    return 'Emiliano García Page dios supremo de CLM'
+        receipt = self.w3.eth.getTransactionReceipt(transaccion)
+        print(receipt)
 
-  def calcular_ganador(self, id_votacion):
-	if votacion_no_existe:
-		return 'Esa votación no existe'
-	if votacion_no_terminada:
-		return 'Esa votación todavía no ha terminado'
-    return 'Ganador calculado'
 
-  def ver_ganador(self, id_votacion):
-  	if votacion_no_existe:
-		return 'Esa votación no existe'
-	if votacion_no_terminada:
-		return 'Esa votación todavía no ha terminado'
-    return 'Ha ganado Page'
-"""
+    def cerrar_lista(self, votacion_id):
+        '''
+        Cerrar lista de candidatos
+        '''
+        print('GAS estimation:', self.contract.functions.cerrarLista(votacion_id).estimateGas())
+        transaccion = self.contract.functions.cerrarLista(votacion_id).transact({'from': self.owner})
+        receipt = self.w3.eth.getTransactionReceipt(transaccion)
+        print(receipt)
 
-    
+    def cerrar_votacion(self, votacion_id):
+        '''
+        Cerrar una única votación
+        '''
+        print('GAS estimation:', self.contract.functions.cerrarEncuesta(votacion_id).estimateGas())
+        transaccion = self.contract.functions.cerrarEncuesta(votacion_id).transact({'from': self.owner})
+        receipt = self.w3.eth.getTransactionReceipt(transaccion)
+        print(receipt)
+
+
+    def votar(self, votacion_id, candidato):
+        '''
+        Votar a un candidato
+        '''
+        print('GAS estimation:', self.contract.functions.votar(votacion_id, candidato).estimateGas())
+        transaction = self.contract.functions.votar(votacion_id, candidato).transact({'from': self.owner})
+        receipt = self.w3.eth.getTransactionReceipt(transaction)
+        print(receipt)
+ 
+
+    def listar_candidatos(self, votacion_id):
+        '''
+        Listar nombres de los candidatos
+        '''
+        candidatos = self.contract.functions.listaCandidatos(votacion_id).call()
+        return candidatos
+
+ 
+
+    def ver_ganador(self, votacion_id):
+        '''
+        Obtener ganador de una votación
+        '''
+        ganador = self.contract.functions.ganador(votacion_id).call()
+        return ganador
+
 
 class Transaccion:
 
@@ -92,6 +97,17 @@ class Transaccion:
             raise RuntimeError('PTTTTTTTTTRRRRRR!!')
         return contract['abi']
     
+    def loadAddress(self,file_name):
+        '''
+        Lectura de la dirección del contractAddress de la red
+        '''
+
+        with open(file_name,'r') as json_file:
+            storage = json.load(json_file)
+
+        return storage['address']
+
+    
     def run(self):
     
         w3 = Web3(HTTPProvider('http://localhost:8545'))
@@ -101,42 +117,41 @@ class Transaccion:
             sys.exit(1)
         print('Node connected')
 
-
         print('Blockchain size: %s' % w3.eth.blockNumber)
         blockNumber = w3.eth.blockNumber - 1
         if blockNumber < 0:
             print('Blockchain is in the genesis block')
             sys.exit(0)
-        block = w3.eth.getBlock(blockNumber)
+        
         try:
-            transaction = block['transactions'][0]
-        except (KeyError, IndexError):
-            print('No transactions found!')
-            sys.exit(1)
-
-        receipt = w3.eth.getTransactionReceipt(transaction)
-        try:
-            contractAddress = receipt['contractAddress']
+            contractAddress = self.loadAddress('address.json')
+            
         except KeyError:
             print('No contract address found!')
             sys.exit(1)
-        Contract = w3.eth.contract(
-            address=contractAddress,
-            abi=self.loadABI('build/contracts/Votaciones.json')
+
+        
+        contract = w3.eth.contract(
+            address = contractAddress,
+            abi = self.loadABI('build/contracts/Votaciones.json')
         )
         owner = w3.eth.accounts[0]
-        n_votaciones = Contract.functions.crearVotacion().call()   
-        print("Number of votations {}".format(n_votaciones))
         
-        n_votaciones = Contract.functions.crearVotacion().call()
-        print(n_votaciones)        
+        votacion = Votacion(contract, w3, owner)
         
-        return Contract, w3, owner  
+        votacion.crear_votacion() 
+        votacion.add_candidato(0, 'Raul')
+        votacion.add_candidato(0,'Hector')
+        lista = votacion.listar_candidatos(0)
+        votacion.cerrar_lista(0)
+        votacion.votar(0,'Hector')
+        votacion.cerrar_votacion(0)
+        gana=votacion.ver_ganador(0)
+        print(gana)
 
 if __name__ == "__main__":
 
     transaccion = Transaccion()
-    Contract, w3, owner = transaccion.run()
-    #option = fire.Fire(Votacion(Contract, w3, owner))
-    #print(option)
+    sys.exit(transaccion.run())
+    
 

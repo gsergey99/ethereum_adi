@@ -52,7 +52,7 @@ contract Votaciones {
 
     
     function addCandidato(uint id_votacion, string calldata nombre_candidato) external {
-        require(id_votacion >= uint(-1), "El id de la votacion debe ser mayor o igual que 0.");
+        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion memory votacion = votaciones[id_votacion];
 
@@ -71,7 +71,7 @@ contract Votaciones {
     }
 
     function cerrarLista(uint id_votacion) external {
-        require(id_votacion >= uint(-1), "El id de la votacion debe ser mayor o igual que 0.");
+        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion storage votacion = votaciones[id_votacion];
 
@@ -79,11 +79,11 @@ contract Votaciones {
         require(votacion.estado == Estado.Creada, "La lista de candidatos ya esta cerrada.");
         require(candidatos_nombres[id_votacion].length > 0, "Se necesita al menos un candidato para poder cerrar la lista.");
 
-        votacion.estado = Estado.Cerrada;
+        votacion.estado = Estado.Abierta;
     }
 
     function cerrarEncuesta(uint id_votacion) external {
-        require(id_votacion >= uint(-1), "El id de la votacion debe ser mayor o igual que 0.");
+        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion storage votacion = votaciones[id_votacion];
 
@@ -93,25 +93,29 @@ contract Votaciones {
 
 
         string[] memory lista_candidatos = candidatos_nombres[id_votacion];
-        string memory curr_ganador = lista_candidatos[0];
-        uint64 max_votos = 0;
+        string memory ganador = lista_candidatos[0];
+        string memory curr_candidato;
+	uint64 max_votos = 0;
         uint64 curr_votos;
         for (uint16 i = 0; i < lista_candidatos.length; i++) {
-            curr_votos = candidatos[id_votacion][curr_ganador].votos;
+            curr_candidato = lista_candidatos[i];
+	    curr_votos = candidatos[id_votacion][curr_candidato].votos;
             if (curr_votos > max_votos) {
                 max_votos = curr_votos;
-                curr_ganador = lista_candidatos[i];
-            }
+                ganador = curr_candidato;
+                
+	    }
         }
 
-        votacion.ganador = curr_ganador;
+        votacion.ganador = ganador;
+	votacion.estado = Estado.Cerrada;
 
     }
     
     // ----- Seccion de otros usuarios -----
 
     function listaCandidatos(uint id_votacion) external view returns (string[] memory) {
-        require(id_votacion >= uint(-1), "El id de la votacion debe ser mayor o igual que 0.");
+        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
 
         string[] memory list_candidatos = candidatos_nombres[id_votacion];
@@ -119,7 +123,7 @@ contract Votaciones {
     }
 
     function votar(uint id_votacion, string calldata nombre_candidato) external {
-        require(id_votacion >= uint(-1), "El id de la votacion debe ser mayor o igual que 0.");
+        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         require(votaciones[id_votacion].estado != Estado.Creada, "La lista de candidatos aun no esta cerrada.");
         require(votaciones[id_votacion].estado != Estado.Cerrada, "La votacion ya ha sido cerrada.");
@@ -133,7 +137,7 @@ contract Votaciones {
     }
 
     function ganador(uint id_votacion) external view returns (string memory){
-        require(id_votacion >= uint(-1), "El id de la votacion debe ser mayor o igual que 0.");
+        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion memory votacion = votaciones[id_votacion];
 

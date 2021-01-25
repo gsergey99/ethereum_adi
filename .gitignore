@@ -1,1 +1,4 @@
 .vagrant
+backend/build/contracts/Migrations.json
+backend/build/contracts/Votaciones.json
+backend/address.json
