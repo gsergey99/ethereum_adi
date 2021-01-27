@@ -1,6 +1,5 @@
 import sys
 import json
-
 from web3 import Web3, HTTPProvider, exceptions
 
 class Votation:
@@ -42,9 +41,9 @@ class Votation:
                 '\t 2. Añadir candidato a una votación \n',
                 '\t 3. Votar candidato \n',
                 '\t 4. Cerrar lista de candidatos \n',
-                '\t 5. Consultar candidatos \n',
+                '\t 5. Cerrar votación \n',
                 '\t 6. Consultar resultado de los candidatos \n',
-                '\t 7. Cerrar votación \n',
+                '\t 7. Consultar candidatos\n',
                 '\t 8. Salir \n')
                 opt = self.choose_option()
 
@@ -55,9 +54,9 @@ class Votation:
                     '2': self.add_candidate,
                     '3': self.vote,
                     '4': self.close_list,
-                    '5': self.list_candidates,
+                    '5': self.close_votation,
                     '6': self.view_winner,
-                    '7': self.close_votation
+                    '7': self.list_candidates
                     }
                     if (opt == 1):
                         operaciones[str(opt)]()
@@ -119,7 +118,7 @@ class Votation:
             return votation_id
         
         except exceptions.Solidity as error:
-            print(error) 
+            raise Exception('Error en la creación de la votación \n') 
 
     def add_candidate(self, *args):
         '''
@@ -139,7 +138,7 @@ class Votation:
             return receipt['status']    
             
         except exceptions.SolidityError:
-            print('\n¡¡¡Error!!!, el candidato está añadido \n')
+            raise Exception('\n¡¡¡Error!!!, el candidato está añadido \n')
             
 
     def close_list(self, *args):
@@ -158,7 +157,8 @@ class Votation:
             return receipt['status']
 
         except exceptions.SolidityError:
-            print('\n¡¡¡Error!!!, la lista de candidatos no está cerrada \n')
+            
+            raise Exception('\n¡¡¡Error!!!, la lista de candidatos no se ha cerrado correctamente \n')
 
 
     def close_votation(self, *args):
@@ -177,7 +177,7 @@ class Votation:
             return receipt['status']
 
         except exceptions.SolidityError:
-            print('\n¡¡¡Error!!!, la votación no está cerrada \n')
+            raise Exception('\n¡¡¡Error!!!, la votación no está cerrada \n')
 
 
     def vote(self, *args):
@@ -197,7 +197,7 @@ class Votation:
             return receipt['status']
 
         except exceptions.SolidityError:
-            print('\n¡¡¡Error!!!, la votación no se ha realizado correctamente. Indique de la ID de la votación y el candidato \n')
+            raise Exception('\n¡¡¡Error!!!, la votación no se ha realizado correctamente. Indique de la ID de la votación y el candidato \n')
 
 
     def list_candidates(self, *args):
@@ -216,7 +216,7 @@ class Votation:
             return candidates
 
         except exceptions.SolidityError:
-            print('\n¡¡¡Error!!!, la lista de candidatos no está disponible \n')
+            raise Exception('\n¡¡¡Error!!!, la lista de candidatos no está disponible \n')
 
     def view_winner(self,*args):
         '''
@@ -231,7 +231,7 @@ class Votation:
             return winner
         
         except exceptions.SolidityError:
-            print('\n¡¡¡Error!!!, el candidato ganador no está disponible \n')
+            raise Exception('\n¡¡¡Error!!!, el candidato ganador no está disponible \n')
         
 
 
@@ -256,8 +256,7 @@ class Conection:
             storage = json.load(json_file)
 
         return storage['address']
-
-    
+ 
     def run(self):
     
         w3 = Web3(HTTPProvider('http://localhost:8545'))
@@ -293,9 +292,13 @@ class Conection:
         
 
 if __name__ == "__main__":
-
-    conection = Conection()
-    votation = conection.run()
-    sys.exit(votation.run())
+    
+    try:
+        conection = Conection()
+        votation = conection.run()
+        sys.exit(votation.run())
+    
+    except Exception as error:
+        print(error)
     
     
