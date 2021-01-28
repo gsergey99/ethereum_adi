@@ -47,3 +47,4 @@ ganache-cli
 - kuberneter: 1.14.2
 - minikube: 1.14.2
 - Truffle: 5.0.5
+- Py-YAML: 5.3.1
