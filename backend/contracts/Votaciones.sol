@@ -91,24 +91,22 @@ contract Votaciones {
         require(votacion.estado != Estado.Creada, "La lista de candidatos aun no esta cerrada.");
         require(votacion.estado != Estado.Cerrada, "La votacion ya ha sido cerrada.");
 
-
         string[] memory lista_candidatos = candidatos_nombres[id_votacion];
-        string memory ganador = lista_candidatos[0];
+        string memory curr_ganador = lista_candidatos[0];
         string memory curr_candidato;
-	uint64 max_votos = 0;
+	    uint64 max_votos = 0;
         uint64 curr_votos;
         for (uint16 i = 0; i < lista_candidatos.length; i++) {
             curr_candidato = lista_candidatos[i];
-	    curr_votos = candidatos[id_votacion][curr_candidato].votos;
+	        curr_votos = candidatos[id_votacion][curr_candidato].votos;
             if (curr_votos > max_votos) {
                 max_votos = curr_votos;
-                ganador = curr_candidato;
-                
-	    }
+                curr_ganador = curr_candidato;   
+	        }
         }
 
-        votacion.ganador = ganador;
-	votacion.estado = Estado.Cerrada;
+        votacion.ganador = curr_ganador;
+	    votacion.estado = Estado.Cerrada;
 
     }
     
@@ -136,7 +134,7 @@ contract Votaciones {
         votantes[id_votacion][msg.sender] = true;
     }
 
-    function ganador(uint id_votacion) external view returns (string memory){
+    function ganador(uint id_votacion) external view returns (string memory) {
         
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion memory votacion = votaciones[id_votacion];
@@ -145,4 +143,23 @@ contract Votaciones {
 
         return votacion.ganador;
     }
+
+    function listaVotos(uint id_votacion) external view returns (uint64[] memory) {
+        
+        require(id_votacion < contadorVotaciones, "La votacion no existe.");
+
+        string[] memory lista_candidatos = candidatos_nombres[id_votacion];
+        uint n_candidatos = lista_candidatos.length;
+
+        uint64[] memory lista_votos = new uint64[](n_candidatos);
+        string memory curr_candidato;
+        
+        for (uint16 i = 0; i < n_candidatos; i++) {
+            curr_candidato = lista_candidatos[i];
+            lista_votos[i] = candidatos[id_votacion][curr_candidato].votos;
+        }
+
+        return lista_votos;
+    }
+
 }
