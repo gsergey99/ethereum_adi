@@ -36,18 +36,19 @@ class Votation:
         while True:
             try:
 
-                print('****** SISTEMA DE VOTACIONES ******')
+                print('\n****** SISTEMA DE VOTACIONES ******')
                 print('\t 1. Crear votación \n',
                 '\t 2. Añadir candidato a una votación \n',
                 '\t 3. Votar candidato \n',
                 '\t 4. Cerrar lista de candidatos \n',
                 '\t 5. Cerrar votación \n',
-                '\t 6. Consultar resultado de los candidatos \n',
+                '\t 6. Consultar ganador \n',
                 '\t 7. Consultar candidatos\n',
-                '\t 8. Salir \n')
+                '\t 8. Consultar resultados de los candidatos \n', 
+                '\t 9. Salir \n')
                 opt = self.choose_option()
 
-                if(opt > 0 and opt <8):
+                if(opt > 0 and opt <9):
 
                     operaciones = {
                     '1': self.create_votation,
@@ -56,12 +57,13 @@ class Votation:
                     '4': self.close_list,
                     '5': self.close_votation,
                     '6': self.view_winner,
-                    '7': self.list_candidates
+                    '7': self.list_candidates,
+                    '8': self.list_results
                     }
                     if (opt == 1):
                         operaciones[str(opt)]()
 
-                    elif (opt > 3 and opt < 8):
+                    elif (opt > 3 and opt < 9):
                          
                         while True:
                             try:
@@ -90,7 +92,7 @@ class Votation:
 
                         operaciones[str(opt)](*args)
                 
-                elif (opt == 8):
+                elif (opt == 9):
                     print('¡Buen día! \n')
                     sys.exit(0)
                 else:
@@ -233,6 +235,23 @@ class Votation:
         except exceptions.SolidityError:
             raise Exception('\n¡¡¡Error!!!, el candidato ganador no está disponible \n')
         
+    def list_results(self,*args):
+        '''
+        Obtener resultados de los candidatos
+        '''
+        votation_id = args[0]
+
+        try:
+            list_results = self.contract.functions.listaVotos(votation_id).call()
+            candidates = self.contract.functions.listaCandidatos(votation_id).call()
+
+            for i in range(len(candidates)):
+
+                print(f'\t \t - {candidates[i]} --- {list_results[i]} votos')
+
+
+        except exceptions.SolidityError:
+            raise Exception('\n¡¡¡Error!!!, la votación no ha terminado \n')
 
 
 class Conection:

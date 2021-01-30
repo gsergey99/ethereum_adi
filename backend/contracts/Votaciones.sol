@@ -147,7 +147,10 @@ contract Votaciones {
     function listaVotos(uint id_votacion) external view returns (uint64[] memory) {
         
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
-
+	
+	Votacion memory votacion = votaciones[id_votacion];
+	require(votacion.estado == Estado.Cerrada, "La votación no ha terminado");
+	
         string[] memory lista_candidatos = candidatos_nombres[id_votacion];
         uint n_candidatos = lista_candidatos.length;
 
