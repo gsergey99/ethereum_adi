@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from votacion import Conection 
+from votacion import Connection 
 from web3 import Web3, HTTPProvider, exceptions
 
 CANDIDATO = 'Pepe'
+CONNECTION = Connection()
 
 class Tests(unittest.TestCase):
     
@@ -13,8 +14,7 @@ class Tests(unittest.TestCase):
         '''
         Crear una votación correctamente
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         self.assertIsNotNone(id_votation) 
     
@@ -22,8 +22,7 @@ class Tests(unittest.TestCase):
         '''
         Añadir un candidato correctamente
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         args = [id_votation, CANDIDATO]
         result = votation.add_candidate(*args)
@@ -33,8 +32,7 @@ class Tests(unittest.TestCase):
         '''
         Añadir un candidato a una votación no existente
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         with self.assertRaises(Exception):
             args = [1234, CANDIDATO]
             votation.add_candidate(*args)
@@ -43,8 +41,7 @@ class Tests(unittest.TestCase):
         '''
         Añadir un candidato existente
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         args = [id_votation, CANDIDATO]
         votation.add_candidate(*args)
@@ -55,8 +52,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una lista correctamente
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         args = [id_votation, CANDIDATO]
         votation.add_candidate(*args)
@@ -67,8 +63,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una lista de candidatos a una votación que no existe
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         with self.assertRaises(Exception):
             args = [1234, CANDIDATO]
             votation.close_list(*args)
@@ -77,8 +72,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una votación correctamente
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO]
         votation.add_candidate(*args_1)
@@ -91,8 +85,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una votación que no existe
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         
         with self.assertRaises(Exception):
             args = [1234]
@@ -102,8 +95,7 @@ class Tests(unittest.TestCase):
         '''
         Crear un voto correctamente
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO]
         votation.add_candidate(*args_1)
@@ -116,8 +108,7 @@ class Tests(unittest.TestCase):
         '''
         Votar a un candidato que no existe
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO] 
         args_2 = [id_votation]
@@ -132,8 +123,7 @@ class Tests(unittest.TestCase):
         '''
         Obtener candidatos de una votación que no existe
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         with self.assertRaises(Exception):
             args = [1234]
             votation.get_candidates(*args)
@@ -142,8 +132,7 @@ class Tests(unittest.TestCase):
         '''
         Obtener resultados de una votación correctamente 
         '''
-        conection = Conection()
-        votation = conection.run()
+        votation = CONNECTION.run()
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO]
         votation.add_candidate(*args_1)
@@ -153,4 +142,17 @@ class Tests(unittest.TestCase):
         votation.close_votation(*args_2)
         result = votation.view_winner(*args_2)
         self.assertEquals(result, "Pepe")
+    
+    def test_resultados_votacion_abierta(self):
+        '''
+        Obtener resultados en una votacion abierta
+        ''' 
+        votation = CONNECTION.run()
+        id_votation = votation.create_votation()
+
+        with self.assertRaises(Exception):
+            args = [id_votation]
+            votation.list_results(*args)
+
+
 

@@ -254,7 +254,7 @@ class Votation:
             raise Exception('\n¡¡¡Error!!!, la votación no ha terminado \n')
 
 
-class Conection:
+class Connection:
 
     def loadABI(self,binaryContractFile):
         '''
@@ -313,8 +313,8 @@ class Conection:
 if __name__ == "__main__":
     
     try:
-        conection = Conection()
-        votation = conection.run()
+        connection = Connection()
+        votation = connection.run()
         sys.exit(votation.run())
     
     except Exception as error:
