@@ -26,7 +26,7 @@ class Tests(unittest.TestCase):
         id_votation = votation.create_votation()
         args = [id_votation, CANDIDATO]
         result = votation.add_candidate(*args)
-        self.assertEquals(result, 1)
+        self.assertEqual(result, 1)
     
     def test_add_candidato_votacion_no_existe(self):
         '''
@@ -57,7 +57,7 @@ class Tests(unittest.TestCase):
         args = [id_votation, CANDIDATO]
         votation.add_candidate(*args)
         result = votation.close_list(*args)
-        self.assertEquals(result, 1)
+        self.assertEqual(result, 1)
 
     def test_cerrar_lista_votacion_no_existe(self):
         '''
@@ -79,7 +79,7 @@ class Tests(unittest.TestCase):
         args_2 = [id_votation]
         votation.close_list(*args_2)
         result = votation.close_votation(*args_2)
-        self.assertEquals(result, 1)
+        self.assertEqual(result, 1)
     
     def test_cerrar_votacion_que_no_existe(self):
         '''
@@ -102,7 +102,7 @@ class Tests(unittest.TestCase):
         args_2 = [id_votation]
         votation.close_list(*args_2)
         result = votation.vote(*args_1)
-        self.assertEquals(result, 1)
+        self.assertEqual(result, 1)
 
     def test_votar_candidato_no_existe(self):
         '''
@@ -116,8 +116,6 @@ class Tests(unittest.TestCase):
         votation.close_list(*args_2)
         with self.assertRaises(Exception):
             votaciones.vote(*args_1)
-
-    
 
     def test_get_candidatos_votacion_no_existe(self):
         '''
@@ -141,7 +139,7 @@ class Tests(unittest.TestCase):
         votation.vote(*args_1)
         votation.close_votation(*args_2)
         result = votation.view_winner(*args_2)
-        self.assertEquals(result, "Pepe")
+        self.assertEqual(result, "Pepe")
     
     def test_resultados_votacion_abierta(self):
         '''
@@ -153,6 +151,3 @@ class Tests(unittest.TestCase):
         with self.assertRaises(Exception):
             args = [id_votation]
             votation.list_results(*args)
-
-
-

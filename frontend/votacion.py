@@ -1,32 +1,32 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import sys
 import json
 from web3 import Web3, HTTPProvider, exceptions
+from web3.middleware import geth_poa_middleware
 
 class Votation:
     
     def  __init__ (self, contract, w3, owner):
-        
         self.w3 = w3
+        self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
         self.owner = owner
         self.contract = contract
-
     
     def choose_option(self):
         '''
         Método para elegir la opción correspondiente
         '''
-
         option = 0
 
         while True:
             try:
                 option = int(input("-> Introduce la opción: "))
                 break
-
             except ValueError:
                 print('¡¡¡Error, no se ha introducido algún valor correcto!!! \n')
         return option
-    
     
     def run(self):
         '''
@@ -35,7 +35,6 @@ class Votation:
 
         while True:
             try:
-
                 print('\n****** SISTEMA DE VOTACIONES ******')
                 print('\t 1. Crear votación \n',
                 '\t 2. Añadir candidato a una votación \n',
@@ -48,23 +47,22 @@ class Votation:
                 '\t 9. Salir \n')
                 opt = self.choose_option()
 
-                if(opt > 0 and opt <9):
-
+                if (opt > 0 and opt < 9):
                     operaciones = {
-                    '1': self.create_votation,
-                    '2': self.add_candidate,
-                    '3': self.vote,
-                    '4': self.close_list,
-                    '5': self.close_votation,
-                    '6': self.view_winner,
-                    '7': self.list_candidates,
-                    '8': self.list_results
+                        '1': self.create_votation,
+                        '2': self.add_candidate,
+                        '3': self.vote,
+                        '4': self.close_list,
+                        '5': self.close_votation,
+                        '6': self.view_winner,
+                        '7': self.list_candidates,
+                        '8': self.list_results
                     }
+
                     if (opt == 1):
                         operaciones[str(opt)]()
 
                     elif (opt > 3 and opt < 9):
-                         
                         while True:
                             try:
                                 votation_id = int(input("-> Introduce identificador de votación: "))
@@ -77,21 +75,16 @@ class Votation:
                         operaciones[str(opt)](*args)
                     
                     elif (opt > 1 and opt < 4):
-                        
                         while True:
                             try:
-                            
                                 votation_id = int(input("-> Introduce identificador de votación: "))
                                 candidate = input("-> Introduce candidato: ")
                                 args = [votation_id, candidate]
                                 break
-                                
-
                             except ValueError:
                                 print('¡¡¡Error, no se ha introducido algún valor correcto!!!\n')
 
                         operaciones[str(opt)](*args)
-                
                 elif (opt == 9):
                     print('¡Buen día! \n')
                     sys.exit(0)
@@ -109,16 +102,15 @@ class Votation:
         print('GAS estimation:', self.contract.functions.crearVotacion().estimateGas())
         transaction = self.contract.functions.crearVotacion().transact({'from': self.owner})  
         
-        receipt = self.w3.eth.getTransactionReceipt(transaction)
+        receipt = self.w3.eth.waitForTransactionReceipt(transaction)
         block_id = receipt['blockNumber'] - 1
-        
         
         try:
             votation_id = self.contract.functions.crearVotacion().call(block_identifier=block_id)
         
             print(f'Votación creada. (Id. votación: {votation_id})')
+
             return votation_id
-        
         except exceptions.Solidity as error:
             raise Exception('Error en la creación de la votación \n') 
 
@@ -133,15 +125,13 @@ class Votation:
             print('GAS estimation:', self.contract.functions.addCandidato(votation_id, candidate).estimateGas())
 
             transaction = self.contract.functions.addCandidato(votation_id, candidate).transact({'from': self.owner})
-            receipt = self.w3.eth.getTransactionReceipt(transaction)
+            receipt = self.w3.eth.waitForTransactionReceipt(transaction)
 
             print(f'Candidato "{candidate}" añadido. (Id. votación: {votation_id}) \n')
             
-            return receipt['status']    
-            
+            return receipt['status']
         except exceptions.SolidityError:
             raise Exception('\n¡¡¡Error!!!, el candidato está añadido \n')
-            
 
     def close_list(self, *args):
         '''
@@ -152,16 +142,13 @@ class Votation:
         try:
             print('GAS estimation:', self.contract.functions.cerrarLista(votation_id).estimateGas())
             transaction = self.contract.functions.cerrarLista(votation_id).transact({'from': self.owner})
-            receipt = self.w3.eth.getTransactionReceipt(transaction)
+            receipt = self.w3.eth.waitForTransactionReceipt(transaction)
 
             print(f'Lista de candidatos cerrada. (Id. votación: {votation_id}) \n')
             
             return receipt['status']
-
         except exceptions.SolidityError:
-            
             raise Exception('\n¡¡¡Error!!!, la lista de candidatos no se ha cerrado correctamente \n')
-
 
     def close_votation(self, *args):
         '''
@@ -172,15 +159,13 @@ class Votation:
         try:
             print('GAS estimation:', self.contract.functions.cerrarEncuesta(votation_id).estimateGas())
             transaction = self.contract.functions.cerrarEncuesta(votation_id).transact({'from': self.owner})
-            receipt = self.w3.eth.getTransactionReceipt(transaction)
+            receipt = self.w3.eth.waitForTransactionReceipt(transaction)
 
             print(f'Votación cerrada. (Id. votación: {votation_id}) \n')
     
             return receipt['status']
-
         except exceptions.SolidityError:
             raise Exception('\n¡¡¡Error!!!, la votación no está cerrada \n')
-
 
     def vote(self, *args):
         '''
@@ -192,15 +177,13 @@ class Votation:
         try:
             print('GAS estimation:', self.contract.functions.votar(votation_id, candidate).estimateGas())
             transaction = self.contract.functions.votar(votation_id, candidate).transact({'from': self.owner})
-            receipt = self.w3.eth.getTransactionReceipt(transaction)
+            receipt = self.w3.eth.waitForTransactionReceipt(transaction)
             
             print(f'Candidato "{candidate}" votado. (Id. votación: {votation_id})')
 
             return receipt['status']
-
         except exceptions.SolidityError:
             raise Exception('\n¡¡¡Error!!!, la votación no se ha realizado correctamente. Indique de la ID de la votación y el candidato \n')
-
 
     def list_candidates(self, *args):
         '''
@@ -216,7 +199,6 @@ class Votation:
                 print(f'\t \t - {candidate} ')
         
             return candidates
-
         except exceptions.SolidityError:
             raise Exception('\n¡¡¡Error!!!, la lista de candidatos no está disponible \n')
 
@@ -231,7 +213,6 @@ class Votation:
             print(f'Candidato "{winner}" ganador. (Id. votación: {votation_id})')
         
             return winner
-        
         except exceptions.SolidityError:
             raise Exception('\n¡¡¡Error!!!, el candidato ganador no está disponible \n')
         
@@ -246,10 +227,7 @@ class Votation:
             candidates = self.contract.functions.listaCandidatos(votation_id).call()
 
             for i in range(len(candidates)):
-
                 print(f'\t \t - {candidates[i]} --- {list_results[i]} votos')
-
-
         except exceptions.SolidityError:
             raise Exception('\n¡¡¡Error!!!, la votación no ha terminado \n')
 
@@ -277,7 +255,6 @@ class Connection:
         return storage['address']
  
     def run(self):
-    
         w3 = Web3(HTTPProvider('http://localhost:8545'))
 
         if not w3.isConnected():
@@ -292,16 +269,14 @@ class Connection:
             sys.exit(0)
         
         try:
-            contractAddress = self.loadAddress('address.json')
-            
+            contractAddress = self.loadAddress('../backend/address.json')
         except KeyError:
             print('No contract address found!')
             sys.exit(1)
-
         
         contract = w3.eth.contract(
             address = contractAddress,
-            abi = self.loadABI('build/contracts/Votaciones.json')
+            abi = self.loadABI('../backend/build/contracts/Votaciones.json')
         )
         owner = w3.eth.accounts[0]
         
@@ -311,7 +286,6 @@ class Connection:
         
 
 if __name__ == "__main__":
-    
     try:
         connection = Connection()
         votation = connection.run()
@@ -319,5 +293,3 @@ if __name__ == "__main__":
     
     except Exception as error:
         print(error)
-    
-    
