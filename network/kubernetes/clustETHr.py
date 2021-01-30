@@ -7,32 +7,6 @@ import yaml
 
 from eth_account import Account
 from datetime import datetime
-from kubernetes import config
-from kubernetes.client import Configuration
-from kubernetes.client.api import core_v1_api
-from kubernetes.stream import portforward
-
-"""
-    config.load_kube_config()
-    c = Configuration.get_default_copy()
-    c.assert_hostname = False
-    Configuration.set_default(c)
-    core_v1 = core_v1_api.CoreV1Api()
-
-    while True:
-            resp = api_instance.read_namespaced_pod(name=name,
-                                                    namespace='default')
-            if resp.status.phase != 'Pending':
-                break
-            time.sleep(1)
-        print("Done.")
-
-    pf = portforward(
-        api_instance.connect_get_namespaced_pod_portforward,
-        name, 'default',
-        ports='80',
-    )
-"""
 
 def generate_account():
     acct = Account.create()
@@ -83,8 +57,9 @@ def degenerate_account():
 
     # Number of nodes
     n = len(data_loaded['nodes'])
-    if n <= 1:
-        print('🚯  Must be one node in the network!')
+    if n <= 2:
+        print('🚯  Must be at least two nodes in the network!')
+        print('ℹ️   The network is configured with 3 sealers, so there must be N/2 + 1 nodes!')
         return -1
 
     node_to_remove = data_loaded['nodes'][-1:][0]
@@ -137,6 +112,22 @@ def del_cluster():
 def view_cluster():
     os.system('watch -n 1 kubectl get po,svc,pv,pvc,statefulset,deployment -o wide')
 
+def forwarding_web3():
+    print('⏩  Forwarding one miner node...')
+    os.system('kubectl port-forward geth-miner01-0 8545:8545')
+
+def forwarding_monitor():
+    print('⏩  Forwarding monitor node...')
+    os.system('kubectl port-forward monitor-0 3001:3001')
+
+def forwarding_explorer():
+    print('⏩  Forwarding explorer node...')
+    os.system('kubectl port-forward explorer-0 3000:3000')
+
+def restart_explorer():
+    os.system('kubectl exec -it explorer-0 -- /sbin/killall5')
+    print('🔄  Restarting explorer node...')
+
 def main():
     parser = argparse.ArgumentParser(description='clustETHr. All you need to manage your Ethereum kubernetes cluster.')
     parser.add_argument('-a', '--add', action='store_true', help='Add a new node')
@@ -144,6 +135,10 @@ def main():
     parser.add_argument('-s', '--start', action='store_true', help='Start the cluster')
     parser.add_argument('-d', '--delete', action='store_true', help='Delete the cluster from your system')
     parser.add_argument('-v', '--view', action='store_true', help='Visualize stats from your cluster')
+    parser.add_argument('-fw3', '--forwarding-web3', action='store_true', help='Forwarding and expose one web3 endpoint')
+    parser.add_argument('-fm', '--forwarding-monitor', action='store_true', help='Forwarding for monitor node')
+    parser.add_argument('-fe', '--forwarding-explorer', action='store_true', help='Forwarding for explorer node')
+    parser.add_argument('-re', '--restart-explorer', action='store_true', help='Restart explorer node')
 
     args = parser.parse_args()
 
@@ -159,6 +154,14 @@ def main():
         del_cluster()
     elif args['view']:
         view_cluster()
+    elif args['forwarding_web3']:
+        forwarding_web3()
+    elif args['forwarding_monitor']:
+        forwarding_monitor()
+    elif args['forwarding_explorer']:
+        forwarding_explorer()
+    elif args['restart_explorer']:
+        restart_explorer()
     else:
         parser.print_help()
 
