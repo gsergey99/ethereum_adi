@@ -254,7 +254,7 @@ class Connection:
 
         return storage['address']
  
-    def run(self):
+    def run(self, account_index):
         w3 = Web3(HTTPProvider('http://localhost:8545'))
 
         if not w3.isConnected():
@@ -278,17 +278,17 @@ class Connection:
             address = contractAddress,
             abi = self.loadABI('../backend/build/contracts/Votaciones.json')
         )
-        owner = w3.eth.accounts[0]
-        
+        owner = w3.eth.accounts[account_index]
         votation = Votation(contract, w3, owner)
         
         return votation
         
 
 if __name__ == "__main__":
+
     try:
         connection = Connection()
-        votation = connection.run()
+        votation = connection.run(0)
         sys.exit(votation.run())
     
     except Exception as error:

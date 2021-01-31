@@ -7,6 +7,7 @@ from web3 import Web3, HTTPProvider, exceptions
 
 CANDIDATO = 'Pepe'
 CONNECTION = Connection()
+CONNECTION_1 = Connection()
 
 class Tests(unittest.TestCase):
     
@@ -14,7 +15,7 @@ class Tests(unittest.TestCase):
         '''
         Crear una votación correctamente
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         self.assertIsNotNone(id_votation) 
     
@@ -22,7 +23,7 @@ class Tests(unittest.TestCase):
         '''
         Añadir un candidato correctamente
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         args = [id_votation, CANDIDATO]
         result = votation.add_candidate(*args)
@@ -32,16 +33,33 @@ class Tests(unittest.TestCase):
         '''
         Añadir un candidato a una votación no existente
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         with self.assertRaises(Exception):
             args = [1234, CANDIDATO]
             votation.add_candidate(*args)
-    
+   
+    def test_usuario_cerrar_votacion(self):
+        '''
+        El propietario de la votación solo podrá cerrar la votación
+        '''
+        votation_propietario = CONNECTION.run(0)
+        id_votation = votation_propietario.create_votation()
+        args_1 = [id_votation, CANDIDATO]
+        votation_propietario.add_candidate(*args_1)
+        args_2 = [id_votation]
+        votation_usuario = CONNECTION_1.run(1)
+        votation_propietario.close_list(*args_2)
+
+        with self.assertRaises(Exception):
+
+            votation_usuario.close_votation(*args_2)
+
+
     def test_add_candidato_ya_en_lista(self):
         '''
         Añadir un candidato existente
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         args = [id_votation, CANDIDATO]
         votation.add_candidate(*args)
@@ -52,7 +70,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una lista correctamente
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         args = [id_votation, CANDIDATO]
         votation.add_candidate(*args)
@@ -63,7 +81,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una lista de candidatos a una votación que no existe
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         with self.assertRaises(Exception):
             args = [1234, CANDIDATO]
             votation.close_list(*args)
@@ -72,7 +90,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una votación correctamente
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO]
         votation.add_candidate(*args_1)
@@ -85,7 +103,7 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una votación que no existe
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         
         with self.assertRaises(Exception):
             args = [1234]
@@ -95,7 +113,20 @@ class Tests(unittest.TestCase):
         '''
         Crear un voto correctamente
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
+        id_votation = votation.create_votation()
+        args_1 = [id_votation, CANDIDATO]
+        votation.add_candidate(*args_1)
+        args_2 = [id_votation]
+        votation.close_list(*args_2)
+        result = votation.vote(*args_1)
+        self.assertEqual(result, 1)
+    
+    def test_votar_varias_veces(self):
+        '''
+        Votar un usuario varias 
+        '''
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO]
         votation.add_candidate(*args_1)
@@ -104,11 +135,14 @@ class Tests(unittest.TestCase):
         result = votation.vote(*args_1)
         self.assertEqual(result, 1)
 
+        with self.assertRaises(Exception):
+            votation.vote(*args_1)
+
     def test_votar_candidato_no_existe(self):
         '''
         Votar a un candidato que no existe
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO] 
         args_2 = [id_votation]
@@ -121,7 +155,7 @@ class Tests(unittest.TestCase):
         '''
         Obtener candidatos de una votación que no existe
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         with self.assertRaises(Exception):
             args = [1234]
             votation.get_candidates(*args)
@@ -130,7 +164,7 @@ class Tests(unittest.TestCase):
         '''
         Obtener resultados de una votación correctamente 
         '''
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
         args_1 = [id_votation, CANDIDATO]
         votation.add_candidate(*args_1)
@@ -145,7 +179,7 @@ class Tests(unittest.TestCase):
         '''
         Obtener resultados en una votacion abierta
         ''' 
-        votation = CONNECTION.run()
+        votation = CONNECTION.run(0)
         id_votation = votation.create_votation()
 
         with self.assertRaises(Exception):
