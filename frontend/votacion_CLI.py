@@ -70,20 +70,23 @@ def input_range(min_value, max_value, msg):
         except ValueError:
             print('¡¡¡Error, no se ha introducido algún valor correcto!!!\n')
 
-        if value < min_value or value > max_value:
+        if (min_value and value < min_value) or (max_value and value > max_value):
             print('¡¡¡Error, el valor introducido no está detro del rango válido!!!\n')
         else:
             break
 
     return value
 
-def input_int(msg):
+def input_candidate(msg):
     while True:
-        try:
-            value = int(input(msg))
-            break
-        except ValueError:
+        value_raw = input(msg)
+        value = value_raw.strip()
+
+        if len(value) == 0:
             print('¡¡¡Error, no se ha introducido algún valor correcto!!! \n')
+        else:
+            break
+
     return value
 
 FUNCTIONS = {
@@ -145,10 +148,10 @@ def main():
         args = [votaciones]
 
         if opt in REQUIERE_VOTACION:
-            args.append(input_int('-> Introduce identificador de votación: '))
+            args.append(input_range(0, None, '-> Introduce identificador de votación: '))
         
         if opt in REQUIERE_CANDIDATO:
-            args.append(input("-> Introduce candidato: "))
+            args.append(input_candidate('-> Introduce candidato: '))
 
         try:
             FUNCTIONS[opt](*args)
