@@ -10,28 +10,28 @@ def crearVotacion(votaciones):
     receipt = status[0]
     votation_id = status[1]
 
-    print("Recibo:", str(receipt), "\n")
+    print("Gas Used:", str(receipt['gasUsed']), "\n")
     print(f'Votación creada. (Id. votación: {votation_id})')
 
 def addCandidato(votaciones, votation_id, candidate):
     status = votaciones.add_candidate(votation_id, candidate)
     receipt = status[0]
 
-    print("Recibo:", str(receipt), "\n")
+    print("Gas Used:", str(receipt['gasUsed']), "\n")
     print(f'Candidato "{candidate}" añadido. (Id. votación: {votation_id}) \n')
 
 def cerrarLista(votaciones, votation_id):
     status = votaciones.close_list(votation_id)
     receipt = status[0]
 
-    print("Recibo:", str(receipt), "\n")
+    print("Gas Used:", str(receipt['gasUsed']), "\n")
     print(f'Lista de candidatos cerrada. (Id. votación: {votation_id}) \n')
 
 def cerrarVotacion(votaciones, votation_id):
     status = votaciones.close_votation(votation_id)
     receipt = status[0]
 
-    print("Recibo:", str(receipt), "\n")
+    print("Gas Used:", str(receipt['gasUsed']), "\n")
     print(f'Votación cerrada. (Id. votación: {votation_id}) \n')
 
 def consultarCandidatos(votaciones, votation_id):
@@ -43,10 +43,10 @@ def consultarCandidatos(votaciones, votation_id):
         print(f'\t \t - {candidate} ')
 
 def votarCandidato(votaciones, votation_id, candidate):
-    status = votaciones.vote(votation_id)
+    status = votaciones.vote(votation_id, candidate)
     receipt = status[0]
 
-    print("Recibo:", str(receipt), "\n")
+    print("Gas Used:", str(receipt['gasUsed']), "\n")
     print(f'Candidato "{candidate}" votado. (Id. votación: {votation_id})')
 
 def consultarGanador(votaciones, votation_id):
@@ -98,7 +98,7 @@ FUNCTIONS = {
     }
 
 REQUIERE_VOTACION = [2, 3, 4, 5, 6, 7, 8]
-REQUIERE_CANDIDATO = [2, 3]
+REQUIERE_CANDIDATO = [2, 6]
 
 def main():
     connection = Connection()
@@ -125,13 +125,13 @@ def main():
         '\t --- Gestionar votaciones --- \n',
         '\t 1. Crear votación \n',
         '\t 2. Añadir candidato a una votación \n',
-        '\t 4. Cerrar lista de candidatos \n',
-        '\t 5. Cerrar votación \n',
+        '\t 3. Cerrar lista de candidatos \n',
+        '\t 4. Cerrar votación \n',
         '\n',
         '\t --- Participar en votaciones --- \n',
-        '\t 7. Consultar candidatos\n',
-        '\t 3. Votar candidato \n',
-        '\t 6. Consultar ganador \n',
+        '\t 5. Consultar candidatos\n',
+        '\t 6. Votar candidato \n',
+        '\t 7. Consultar ganador \n',
         '\t 8. Consultar resultados de los candidatos \n',
         '\n',
         '\t 0. Salir \n')
@@ -153,7 +153,8 @@ def main():
         try:
             FUNCTIONS[opt](*args)
         except Exception as e:
-            print(e)
+            error = str(e)
+            print(error[70:])
 
 if __name__ == "__main__":
     try:

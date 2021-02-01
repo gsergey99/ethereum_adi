@@ -5,9 +5,22 @@ import unittest
 from votacion import Connection 
 from web3 import Web3, HTTPProvider, exceptions
 
+INVALID_ID = 1234
+
+CUENTA_1 = 0
+CUENTA_2 = 1
+
 CANDIDATO = 'Pepe'
-CONNECTION = Connection()
+INVALID_CANDIDATO = "Pepa"
+
 CONNECTION_1 = Connection()
+CONNECTION_1.connect()
+VOTATION_1 = CONNECTION_1.run(CUENTA_1)
+
+CONNECTION_2 = Connection()
+CONNECTION_2.connect()
+VOTATION_2 = CONNECTION_2.run(CUENTA_2)
+
 
 class Tests(unittest.TestCase):
     
@@ -15,173 +28,184 @@ class Tests(unittest.TestCase):
         '''
         Crear una votación correctamente
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        self.assertIsNotNone(id_votation) 
+
+        result = VOTATION_1.create_votation()
+        self.assertIsNotNone(result[0]) 
+    
     
     def test_add_candidato(self):
         '''
-        Añadir un candidato correctamente
+        Añadir un candidato correctamente a la lista de candidatos
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args = [id_votation, CANDIDATO]
-        result = votation.add_candidate(*args)
-        self.assertEqual(result, 1)
+
+        id_votation = VOTATION_1.create_votation()[1]
+        result = VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        
+        self.assertEqual(result[0]['status'], 1)
     
     def test_add_candidato_votacion_no_existe(self):
         '''
         Añadir un candidato a una votación no existente
         '''
-        votation = CONNECTION.run(0)
+
         with self.assertRaises(Exception):
-            args = [1234, CANDIDATO]
-            votation.add_candidate(*args)
+            VOTATION_1.add_candidate(INVALID_ID, CANDIDATO)
    
     def test_usuario_cerrar_votacion(self):
         '''
-        El propietario de la votación solo podrá cerrar la votación
+        Solo el propietario de la votación podrá cerrar la votación
         '''
-        votation_propietario = CONNECTION.run(0)
-        id_votation = votation_propietario.create_votation()
-        args_1 = [id_votation, CANDIDATO]
-        votation_propietario.add_candidate(*args_1)
-        args_2 = [id_votation]
-        votation_usuario = CONNECTION_1.run(1)
-        votation_propietario.close_list(*args_2)
+        
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        VOTATION_1.close_list(id_votation)
 
         with self.assertRaises(Exception):
 
-            votation_usuario.close_votation(*args_2)
+            VOTATION_2.close_votation(id_votation)
 
-
+    
     def test_add_candidato_ya_en_lista(self):
         '''
-        Añadir un candidato existente
+        Añadir un candidato ya existente a la lista de candidatos
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args = [id_votation, CANDIDATO]
-        votation.add_candidate(*args)
+
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        
         with self.assertRaises(Exception):
-            votation.add_candidate(*args)
+            
+            VOTATION_1.add_candidate(id_votation, CANDIDATO)
    
+    
     def test_cerrar_lista(self):
         '''
-        Cerrar una lista correctamente
+        Cerrar una lista de candidatos correctamente
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args = [id_votation, CANDIDATO]
-        votation.add_candidate(*args)
-        result = votation.close_list(*args)
-        self.assertEqual(result, 1)
+
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        result = VOTATION_1.close_list(id_votation)
+        
+        self.assertEqual(result[0]['status'], 1)
 
     def test_cerrar_lista_votacion_no_existe(self):
         '''
         Cerrar una lista de candidatos a una votación que no existe
         '''
-        votation = CONNECTION.run(0)
+
         with self.assertRaises(Exception):
-            args = [1234, CANDIDATO]
-            votation.close_list(*args)
-	
+            
+            VOTATION_1.close_list(INVALID_ID, CANDIDATO)
+    
+    def test_cerrar_lista_propietario(self):
+        '''
+        Solo el propietario de la votación puede cerrar la lista de candidatos
+        '''
+        
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        
+        with self.assertRaises(Exception):
+            
+            VOTATION_2.close_list(id_votation)
+
     def test_cerrar_votacion(self):
         '''
         Cerrar una votación correctamente
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args_1 = [id_votation, CANDIDATO]
-        votation.add_candidate(*args_1)
-        args_2 = [id_votation]
-        votation.close_list(*args_2)
-        result = votation.close_votation(*args_2)
-        self.assertEqual(result, 1)
+
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        VOTATION_1.close_list(id_votation)
+        result = VOTATION_1.close_votation(id_votation)
+        
+        self.assertEqual(result[0]['status'], 1)
     
-    def test_cerrar_votacion_que_no_existe(self):
+    def test_cerrar_votacion_no_existe(self):
         '''
         Cerrar una votación que no existe
         '''
-        votation = CONNECTION.run(0)
-        
+             
         with self.assertRaises(Exception):
-            args = [1234]
-            votation.close_votation(*args)
+    
+            VOTATION_1.close_votation(INVALID_ID)
 	
     def test_votar(self):
         '''
-        Crear un voto correctamente
+        Votar correctamente
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args_1 = [id_votation, CANDIDATO]
-        votation.add_candidate(*args_1)
-        args_2 = [id_votation]
-        votation.close_list(*args_2)
-        result = votation.vote(*args_1)
-        self.assertEqual(result, 1)
+
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        VOTATION_1.close_list(id_votation)
+        result = VOTATION_1.vote(id_votation, CANDIDATO)
+        
+        self.assertEqual(result[0]['status'], 1)
     
     def test_votar_varias_veces(self):
         '''
-        Votar un usuario varias 
+        Un usuario vota dos veces al mismo candidato
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args_1 = [id_votation, CANDIDATO]
-        votation.add_candidate(*args_1)
-        args_2 = [id_votation]
-        votation.close_list(*args_2)
-        result = votation.vote(*args_1)
-        self.assertEqual(result, 1)
+
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        VOTATION_1.close_list(id_votation)
+        VOTATION_1.vote(id_votation, CANDIDATO)
 
         with self.assertRaises(Exception):
-            votation.vote(*args_1)
+            
+            VOTATION_1.vote(id_votation, CANDIDATO)
 
     def test_votar_candidato_no_existe(self):
         '''
-        Votar a un candidato que no existe
+        Votar a un candidato que no existe en la lista de candidatos
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args_1 = [id_votation, CANDIDATO] 
-        args_2 = [id_votation]
-        votation.add_candidate(*args_1)
-        votation.close_list(*args_2)
+        
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        VOTATION_1.close_list(id_votation)
+
         with self.assertRaises(Exception):
-            votaciones.vote(*args_1)
+            
+            VOTATION_1.vote(id_votation, INVALID_CANDIDATO)
+
 
     def test_get_candidatos_votacion_no_existe(self):
         '''
         Obtener candidatos de una votación que no existe
         '''
-        votation = CONNECTION.run(0)
+        
         with self.assertRaises(Exception):
-            args = [1234]
-            votation.get_candidates(*args)
+
+            VOTATION_1.get_candidates(INVALID_ID)
 
     def test_get_resultado(self):
         '''
         Obtener resultados de una votación correctamente 
         '''
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
-        args_1 = [id_votation, CANDIDATO]
-        votation.add_candidate(*args_1)
-        args_2 = [id_votation]
-        votation.close_list(*args_2)
-        votation.vote(*args_1)
-        votation.close_votation(*args_2)
-        result = votation.view_winner(*args_2)
-        self.assertEqual(result, "Pepe")
+        
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        VOTATION_1.close_list(id_votation)
+        VOTATION_1.vote(id_votation, CANDIDATO)
+        VOTATION_1.close_votation(id_votation)
+        result = VOTATION_1.view_winner(id_votation)
+        
+        self.assertEqual(result[1], CANDIDATO)
     
     def test_resultados_votacion_abierta(self):
         '''
         Obtener resultados en una votacion abierta
         ''' 
-        votation = CONNECTION.run(0)
-        id_votation = votation.create_votation()
+        
+        id_votation = VOTATION_1.create_votation()[1]
+        VOTATION_1.add_candidate(id_votation, CANDIDATO)
+        VOTATION_1.close_list(id_votation)
+        VOTATION_1.vote(id_votation, CANDIDATO)
 
         with self.assertRaises(Exception):
-            args = [id_votation]
-            votation.list_results(*args)
+            
+            VOTATION_1.view_winner(id_votation)
+
+
