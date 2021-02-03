@@ -1,50 +1,71 @@
-# ethereum_adi
-Repositorio del proyecto final de ADI
+# Proyecto final de Aplicaciones Distribuidas en Internet: Introducción a blockchains.
 
-#### Versions
+Basado en [Ethereum POA (Clique) on Kubernetes](https://medium.com/@edi.sinovcic/ethererum-poa-clique-on-kubernetes-6e86fed0c310).
 
-- Ansible >= 2.9
-- Vagrant >= 2.2.6
+Como entorno de laboratorio necesitamos una máquina Windows o Linux con las siguientes versiones:
+
+- python>= 3.8.6
+- vagrant >= 2.2.14
 - virtualbox >= 6.1
+- guest additions >= 5.2.42
 
-### Before how to run
-Es necesario instalar virtualbox con su paquete de extensión.
+*Estas son las que se han probado, lo que no quita que otras sean posibles.*
 
-```
-apt install virtualbox virtualbox-ext-pack
-```
+#### Se creará una máquina virtual con los siguientes recursos: **4 vCPUs y 16 GB de RAM**.
 
-#### How to run
-Para iniciar el entorno de trabajo:
+### Despliegue de la red
 
-```
-vagrant up
-vagrant ssh adi
-ganache-cli
-```
+- Clonamos el repositorio.
+- Nos movemos a la carpeta `ethereum_adi`.
+- Ejecutamos el script de python3 `start_network.py`.
 
-Modificar el fichero truffle-config.js para que se conecte a ganache-cli:
-```
-module.exports = {
-  networks: {
-    development: {
-      host: "localhost",
-      port: 8545,
-      network_id: "*"
-    }
-  }
-};
-```
+Una vez este comando haya acabado tendremos una máquina virtual sobre la que se ejecutará el cluster de `Kubernetes` (usando `minikube`) donde se estará ejecutando la red de Ethereum POA.
 
-Iniciar ganache-cli:
-```
-ganache-cli
-```
+### Uso del *frontend*
 
-### Versiones para la red
+- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+- Nos movemos al directorio `ethereum_adi/frontend`.
+- Ejecutamos: `python3 votaciones_cli.py`.
 
-- kubectl: 1.14.2
-- kuberneter: 1.14.2
-- minikube: 1.14.2
-- Truffle: 5.0.5
-- PyYAML: 5.3.1
+#### Ejecución de la *test suite*
+
+- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+- Nos movemos al directorio `ethereum_adi/frontend`.
+- Ejecutamos: `tox`.
+
+
+### 3rd parties utilizadas 
+
+#### apt-get
+
+- net-tools 
+- build-essential 
+- solc 
+- ethereum 
+- nodejs 
+- python3
+- python3-pip 
+- ruby-full 
+- docker.io 
+- dos2unix
+
+#### pip3
+- PyYAML
+- web3
+- tox
+- eth_account
+
+#### npm
+
+- truffle
+- ganache-cli
+
+#### Otros 
+
+- kubectl
+- kubernetes
+- minikube
+- vagrant
+
+- virtualbox
+- virtualbox-guest-additions
