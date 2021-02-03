@@ -2,3 +2,4 @@
 __pycache__
 .tox
 testing.egg-info
+ubuntu-bionic-18.04-cloudimg-console.log

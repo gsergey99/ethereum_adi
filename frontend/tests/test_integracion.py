@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from votacion import Connection 
-from web3 import Web3, HTTPProvider, exceptions
+from votacion import Connection
 
 INVALID_ID = 1234
 
@@ -28,16 +27,13 @@ class Tests(unittest.TestCase):
         '''
         Crear una votación correctamente
         '''
-
         result = VOTATION_1.create_votation()
         self.assertIsNotNone(result[0]) 
-    
     
     def test_add_candidato(self):
         '''
         Añadir un candidato correctamente a la lista de candidatos
         '''
-
         id_votation = VOTATION_1.create_votation()[1]
         result = VOTATION_1.add_candidate(id_votation, CANDIDATO)
         
@@ -47,7 +43,6 @@ class Tests(unittest.TestCase):
         '''
         Añadir un candidato a una votación no existente
         '''
-
         with self.assertRaises(Exception):
             VOTATION_1.add_candidate(INVALID_ID, CANDIDATO)
    
@@ -55,34 +50,27 @@ class Tests(unittest.TestCase):
         '''
         Solo el propietario de la votación podrá cerrar la votación
         '''
-        
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         VOTATION_1.close_list(id_votation)
 
         with self.assertRaises(Exception):
-
             VOTATION_2.close_votation(id_votation)
 
-    
     def test_add_candidato_ya_en_lista(self):
         '''
         Añadir un candidato ya existente a la lista de candidatos
         '''
-
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         
         with self.assertRaises(Exception):
-            
             VOTATION_1.add_candidate(id_votation, CANDIDATO)
    
-    
     def test_cerrar_lista(self):
         '''
         Cerrar una lista de candidatos correctamente
         '''
-
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         result = VOTATION_1.close_list(id_votation)
@@ -93,28 +81,23 @@ class Tests(unittest.TestCase):
         '''
         Cerrar una lista de candidatos a una votación que no existe
         '''
-
-        with self.assertRaises(Exception):
-            
+        with self.assertRaises(Exception):  
             VOTATION_1.close_list(INVALID_ID, CANDIDATO)
     
     def test_cerrar_lista_propietario(self):
         '''
         Solo el propietario de la votación puede cerrar la lista de candidatos
         '''
-        
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         
         with self.assertRaises(Exception):
-            
             VOTATION_2.close_list(id_votation)
 
     def test_cerrar_votacion(self):
         '''
         Cerrar una votación correctamente
         '''
-
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         VOTATION_1.close_list(id_votation)
@@ -125,17 +108,14 @@ class Tests(unittest.TestCase):
     def test_cerrar_votacion_no_existe(self):
         '''
         Cerrar una votación que no existe
-        '''
-             
+        '''    
         with self.assertRaises(Exception):
-    
             VOTATION_1.close_votation(INVALID_ID)
 	
     def test_votar(self):
         '''
         Votar correctamente
         '''
-
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         VOTATION_1.close_list(id_votation)
@@ -147,44 +127,36 @@ class Tests(unittest.TestCase):
         '''
         Un usuario vota dos veces al mismo candidato
         '''
-
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         VOTATION_1.close_list(id_votation)
         VOTATION_1.vote(id_votation, CANDIDATO)
 
         with self.assertRaises(Exception):
-            
             VOTATION_1.vote(id_votation, CANDIDATO)
 
     def test_votar_candidato_no_existe(self):
         '''
         Votar a un candidato que no existe en la lista de candidatos
         '''
-        
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         VOTATION_1.close_list(id_votation)
 
         with self.assertRaises(Exception):
-            
             VOTATION_1.vote(id_votation, INVALID_CANDIDATO)
-
 
     def test_get_candidatos_votacion_no_existe(self):
         '''
         Obtener candidatos de una votación que no existe
         '''
-        
         with self.assertRaises(Exception):
-
             VOTATION_1.get_candidates(INVALID_ID)
 
     def test_get_resultado(self):
         '''
         Obtener resultados de una votación correctamente 
         '''
-        
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         VOTATION_1.close_list(id_votation)
@@ -198,14 +170,10 @@ class Tests(unittest.TestCase):
         '''
         Obtener resultados en una votacion abierta
         ''' 
-        
         id_votation = VOTATION_1.create_votation()[1]
         VOTATION_1.add_candidate(id_votation, CANDIDATO)
         VOTATION_1.close_list(id_votation)
         VOTATION_1.vote(id_votation, CANDIDATO)
 
         with self.assertRaises(Exception):
-            
             VOTATION_1.view_winner(id_votation)
-
-

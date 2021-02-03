@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-from web3 import Web3, HTTPProvider, exceptions
+from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 
 class Connection:
@@ -131,5 +131,3 @@ class Votation:
             results.append((candidates[i], list_results[i]))
         
         return (None, results)
-
-
