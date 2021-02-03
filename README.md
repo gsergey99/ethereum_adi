@@ -7,7 +7,7 @@ Como entorno de laboratorio necesitamos una máquina Windows o Linux con las sig
 - python>= 3.8.6
 - vagrant >= 2.2.14
 - virtualbox >= 6.1
-- guest additions >= 5.2.42
+- virtualbox-guest-additions >= 5.2.42
 
 *Estas son las que se han probado, lo que no quita que otras sean posibles.*
 
@@ -66,6 +66,5 @@ Una vez este comando haya acabado tendremos una máquina virtual sobre la que se
 - kubernetes
 - minikube
 - vagrant
-
 - virtualbox
 - virtualbox-guest-additions
