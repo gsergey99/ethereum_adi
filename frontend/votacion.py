@@ -6,8 +6,8 @@ from web3 import Web3, HTTPProvider
 from web3.middleware import geth_poa_middleware
 
 class Connection:
-    def connect(self):
-        self.w3 = Web3(HTTPProvider('http://localhost:8545'))
+    def run(self, url):
+        self.w3 = Web3(HTTPProvider(url))
 
         if not self.w3.isConnected():
             raise Exception('Cannot connect to node!')
@@ -15,8 +15,6 @@ class Connection:
         blockNumber = self.w3.eth.blockNumber - 1
         if blockNumber < 0:
             raise Exception('Blockchain is in the genesis block')
-    
-    def run(self, account_index):
         
         contractAddress = self._loadAddress('../backend/address.json')
         
@@ -24,7 +22,7 @@ class Connection:
             address = contractAddress,
             abi = self._loadABI('../backend/build/contracts/Votaciones.json')
         )
-        owner = self.w3.eth.accounts[account_index]
+        owner = self.w3.eth.accounts[0]
         votation = Votation(contract, self.w3, owner)
         
         return votation

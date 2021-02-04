@@ -104,23 +104,18 @@ REQUIERE_VOTACION = [2, 3, 4, 5, 6, 7, 8]
 REQUIERE_CANDIDATO = [2, 6]
 
 def main():
+
+    url = input(f'-> Introduce la url del nodo: ')
+
     connection = Connection()
     try:
-        connection.connect()
+        votaciones = connection.run(url)
     except Exception as ex:
         print(str(ex))
         sys.exit(1)
     
     print('Node connected')
     print('Blockchain size: %s' % connection.w3.eth.blockNumber)
-
-    n_account = len(connection.w3.eth.accounts)
-    account_index = input_range(0, n_account, f'-> Introduce el índice de la cuenta a usar [0 - {n_account}]: ')
-    try:
-        votaciones = connection.run(account_index)
-    except Exception as ex:
-        print('No contract address found!')
-        sys.exit(1)
 
     while True:
         print('\n****** SISTEMA DE VOTACIONES ****** \n',

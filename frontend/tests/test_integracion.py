@@ -4,22 +4,17 @@
 import unittest
 from votacion import Connection
 
-INVALID_ID = 1234
+URL_1 = "http://localhost:8545"
+CONNECTION_1 = Connection()
+VOTATION_1 = CONNECTION_1.run(URL_1)
 
-CUENTA_1 = 0
-CUENTA_2 = 1
+URL_2 = "http://localhost:8546"
+CONNECTION_2 = Connection()
+VOTATION_2 = CONNECTION_2.run(URL_2)
 
 CANDIDATO = 'Pepe'
 INVALID_CANDIDATO = "Pepa"
-
-CONNECTION_1 = Connection()
-CONNECTION_1.connect()
-VOTATION_1 = CONNECTION_1.run(CUENTA_1)
-
-CONNECTION_2 = Connection()
-CONNECTION_2.connect()
-VOTATION_2 = CONNECTION_2.run(CUENTA_2)
-
+INVALID_ID = 1234
 
 class Tests(unittest.TestCase):
     
