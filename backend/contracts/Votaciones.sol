@@ -49,10 +49,8 @@ contract Votaciones {
 
         return id;
     }
-
     
     function addCandidato(uint id_votacion, string calldata nombre_candidato) external {
-        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion memory votacion = votaciones[id_votacion];
 
@@ -71,7 +69,6 @@ contract Votaciones {
     }
 
     function cerrarLista(uint id_votacion) external {
-        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion storage votacion = votaciones[id_votacion];
 
@@ -107,13 +104,11 @@ contract Votaciones {
 
         votacion.ganador = curr_ganador;
 	    votacion.estado = Estado.Cerrada;
-
     }
     
     // ----- Seccion de otros usuarios -----
 
     function listaCandidatos(uint id_votacion) external view returns (string[] memory) {
-        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
 
         string[] memory list_candidatos = candidatos_nombres[id_votacion];
@@ -121,7 +116,6 @@ contract Votaciones {
     }
 
     function votar(uint id_votacion, string calldata nombre_candidato) external {
-        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         require(votaciones[id_votacion].estado != Estado.Creada, "La lista de candidatos aun no esta cerrada.");
         require(votaciones[id_votacion].estado != Estado.Cerrada, "La votacion ya ha sido cerrada.");
@@ -135,7 +129,6 @@ contract Votaciones {
     }
 
     function ganador(uint id_votacion) external view returns (string memory) {
-        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
         Votacion memory votacion = votaciones[id_votacion];
 
@@ -145,11 +138,10 @@ contract Votaciones {
     }
 
     function listaVotos(uint id_votacion) external view returns (uint64[] memory) {
-        
         require(id_votacion < contadorVotaciones, "La votacion no existe.");
 	
-	Votacion memory votacion = votaciones[id_votacion];
-	require(votacion.estado == Estado.Cerrada, "La votación no ha terminado");
+	    Votacion memory votacion = votaciones[id_votacion];
+	    require(votacion.estado == Estado.Cerrada, "La votación no ha terminado");
 	
         string[] memory lista_candidatos = candidatos_nombres[id_votacion];
         uint n_candidatos = lista_candidatos.length;
@@ -164,5 +156,4 @@ contract Votaciones {
 
         return lista_votos;
     }
-
 }

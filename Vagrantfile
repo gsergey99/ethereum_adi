@@ -13,6 +13,6 @@ Vagrant.configure("2") do |config|
       node.vm.hostname = "adi"
       node.vm.network "public_network", bridge: external_iface(), use_dhcp_assigned_default_route: true
     end
-	
-	  config.vm.provision "shell", path: "provision.sh"
+    
+    config.vm.provision "shell", path: "provision.sh"
 end

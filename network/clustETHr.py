@@ -82,7 +82,7 @@ def degenerate_account():
 def add_node():
     generate_account()
     
-    os.system('./blockchainit')
+    os.system('ruby ./blockchainit')
     os.system('kubectl apply -f yaml/ > /dev/null')
     
     print('🚀  Successful added new node!')

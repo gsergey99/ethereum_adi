@@ -20,7 +20,7 @@ chmod 744 /tmp/setup_10.x
 /tmp/setup_10.x
 
 # Install depends
-apt install -y net-tools build-essential solc ethereum nodejs python3-pip ruby-full docker.io
+apt install -y net-tools build-essential solc ethereum nodejs python3-pip ruby-full docker.io dos2unix
 
 # Install truffle
 npm install -g truffle@5.0.5
@@ -58,6 +58,9 @@ mkdir /home/vagrant/ethereum-adi
 # Copy project
 cp -r /vagrant/* /home/vagrant/ethereum-adi
 
+# Change CRLF to LF
+find /home/vagrant/ethereum-adi/ -type f -print0 | xargs -0 dos2unix
+
 # Change owner of the project
 chown vagrant:vagrant -R /home/vagrant/ethereum-adi/
 
@@ -65,4 +68,4 @@ chown vagrant:vagrant -R /home/vagrant/ethereum-adi/
 minikube config set WantUpdateNotification false
 
 # Start the network
-runuser -l vagrant -c 'cd /home/vagrant/ethereum-adi/network && /vagrant/network/clustETHr.py -s'
+runuser -l vagrant -c 'cd /home/vagrant/ethereum-adi/network && python3 /vagrant/network/clustETHr.py -s'

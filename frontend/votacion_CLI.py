@@ -4,7 +4,6 @@
 from votacion import Connection
 import sys
 
-
 def crearVotacion(votaciones):
     status = votaciones.create_votation()
     receipt = status[0]
@@ -90,21 +89,20 @@ def input_candidate(msg):
     return value
 
 FUNCTIONS = {
-        1 : crearVotacion,
-        2 : addCandidato,
-        3 : cerrarLista,
-        4 : cerrarVotacion,
-        5 : consultarCandidatos,
-        6 : votarCandidato,
-        7 : consultarGanador,
-        8 : consultarResultados
-    }
+    1 : crearVotacion,
+    2 : addCandidato,
+    3 : cerrarLista,
+    4 : cerrarVotacion,
+    5 : consultarCandidatos,
+    6 : votarCandidato,
+    7 : consultarGanador,
+    8 : consultarResultados
+}
 
 REQUIERE_VOTACION = [2, 3, 4, 5, 6, 7, 8]
 REQUIERE_CANDIDATO = [2, 6]
 
 def main():
-
     url = input(f'-> Introduce la url del nodo: ')
 
     connection = Connection()
@@ -160,4 +158,3 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print('\n ¡Buen día! \n')
         sys.exit(0)
-
