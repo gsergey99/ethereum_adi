@@ -68,3 +68,15 @@ Una vez este comando haya acabado tendremos una máquina virtual sobre la que se
 - vagrant
 - virtualbox
 - virtualbox-guest-additions
+
+### Autores
+
+|              Miembro              |    DNI    |              Rol             |
+|:---------------------------------:|:---------:|:----------------------------:|
+|      Sergio Jiménez del Coso      | 45774386Q |      Backend / Frontend      |
+|       Héctor Moreno Sánchez       | 02318660F |      Backend / Frontend      |
+|       Raúl Bernalte Sánchez       | 71360779J |      Backend / Frontend      |
+|         Ismael Vélez Recio        | 50355567B |      Backend / Frontend      |
+|         Juan Romero Cañas         | 05939767V | Red Blockchain / Integración |
+| Enrique Adrián Villarrubia Martín | 05722202D | Red Blockchain / Integración |
+
