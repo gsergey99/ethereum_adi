@@ -21,17 +21,51 @@ Como entorno de laboratorio necesitamos una máquina Windows o Linux con las sig
 
 Una vez este comando haya acabado tendremos una máquina virtual sobre la que se ejecutará el cluster de `Kubernetes` (usando `minikube`) donde se estará ejecutando la red de Ethereum POA.
 
+La red consta de un *bootnode*, tres nodos mineros, un nodo monitor y un nodo explorador. El nodo monitor y el nodo explorar cuentan con una interfaz web en el puerto 3001 y 3000 respectivamente. Estas interfaces estarán disponibles una vez se haya desplegado la red por completo.
+
+### Control de la red
+
+#### Añadir un nodo a la red
+
+- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+- Nos movemos al directorio `ethereum_adi/network`.
+- Ejecutamos: `python3 clustETHr.py -a`.
+
+#### Quitar un nodo a la red
+
+- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+- Nos movemos al directorio `ethereum_adi/network`.
+- Ejecutamos: `python3 clustETHr.py -r`.
+
+#### Monitorizar la red
+
+- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+- Nos movemos al directorio `ethereum_adi/network`.
+- Ejecutamos: `python3 clustETHr.py -w`.
+
+#### Destruir la red
+
+- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+- Nos movemos al directorio `ethereum_adi/network`.
+- Ejecutamos: `python3 clustETHr.py -d`.
+
 ### Uso del *frontend*
 
 - Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
 - Nos movemos al directorio `ethereum_adi/frontend`.
-- Ejecutamos: `python3 votaciones_cli.py`.
+- Ejecutamos: `python3 votaciones_CLI.py`.
 
-#### Ejecución de la *test suite*
+#### Ejecución de la *test suite* de integración
 
 - Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
 - Nos movemos al directorio `ethereum_adi/frontend`.
 - Ejecutamos: `tox`.
+
+#### Ejecución de la *test suite* del *smart contract*
+
+- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+- Nos movemos al directorio `ethereum_adi/frontend`.
+- Ejecutamos: `sudo truffle test --network 123456`.
 
 
 ### 3rd parties utilizadas 
