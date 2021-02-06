@@ -25,28 +25,23 @@ La red consta de un *bootnode*, tres nodos mineros, un nodo monitor y un nodo ex
 
 ### Control de la red
 
-#### Añadir un nodo a la red
-
 - Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
 - Nos movemos al directorio `ethereum_adi/network`.
+
+#### Añadir un nodo a la red
+
 - Ejecutamos: `python3 clustETHr.py -a`.
 
 #### Quitar un nodo a la red
 
-- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
-- Nos movemos al directorio `ethereum_adi/network`.
 - Ejecutamos: `python3 clustETHr.py -r`.
 
 #### Monitorizar la red
 
-- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
-- Nos movemos al directorio `ethereum_adi/network`.
 - Ejecutamos: `python3 clustETHr.py -w`.
 
 #### Destruir la red
 
-- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
-- Nos movemos al directorio `ethereum_adi/network`.
 - Ejecutamos: `python3 clustETHr.py -d`.
 
 ### Uso del *frontend*
@@ -55,16 +50,18 @@ La red consta de un *bootnode*, tres nodos mineros, un nodo monitor y un nodo ex
 - Nos movemos al directorio `ethereum_adi/frontend`.
 - Ejecutamos: `python3 votaciones_CLI.py`.
 
-#### Ejecución de la *test suite* de integración
+### Test suites
 
 - Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
+
+#### Ejecución de la *test suite* de integración
+
 - Nos movemos al directorio `ethereum_adi/frontend`.
 - Ejecutamos: `tox`.
 
 #### Ejecución de la *test suite* del *smart contract*
 
-- Ejecutamos `vagrant ssh` para conectamos a la máquina virtual.
-- Nos movemos al directorio `ethereum_adi/frontend`.
+- Nos movemos al directorio `ethereum_adi/backend`.
 - Ejecutamos: `sudo truffle test --network 123456`.
 
 
