@@ -70,38 +70,19 @@ La red consta de un *bootnode*, tres nodos mineros, un nodo monitor y un nodo ex
 
 ### 3rd parties utilizadas 
 
-#### apt-get
+| apt-get |                 pip3                |           npm           | Otros |
+|:-------:|:-----------------------------------:|:-----------------------:|:-----:|
+|  net-tools        | web3    | truffle               | kubectl       |
+|  build-essential          | PyYAML  | ganache-cli           |  kubernetes     |
+|  solc         | tox     |            |  minikube     |
+|  ethereum        | eth_account  |            |  vagrant     |
+|  nodejs       |         |            | virtualbox      |
+|  python3       |         |            |  virtualbox-guest-additions     |
+|  python3-pip      |         |          |       |
+|  ruby-full      |         |          |       |
+|  docker.io       |         |          |       |
+|  dos2unix      |         |          |       |
 
-- net-tools 
-- build-essential 
-- solc 
-- ethereum 
-- nodejs 
-- python3
-- python3-pip 
-- ruby-full 
-- docker.io 
-- dos2unix
-
-#### pip3
-- PyYAML
-- web3
-- tox
-- eth_account
-
-#### npm
-
-- truffle
-- ganache-cli
-
-#### Otros 
-
-- kubectl
-- kubernetes
-- minikube
-- vagrant
-- virtualbox
-- virtualbox-guest-additions
 
 ### Autores
 
